@@ -1,272 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search Script</title>
+    <title>Bing Search</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f7fa;
-        color: #333;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      h1 {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #333;
-      }
-
-      #results {
-        list-style-type: none;
-        counter-reset: searchCount;
-        padding: 0;
-        margin-top: 20px;
-        width: 100%;
-        max-width: 600px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-      }
-
-      #results li {
-        counter-increment: searchCount;
-        margin-bottom: 10px;
-        padding: 8px;
-        background: #f9f9f9;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-      }
-
-      #results li::before {
-        content: counter(searchCount) ". ";
-        font-weight: bold;
-        color: #007bff;
-      }
-
-      button {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-bottom: 20px;
-      }
-
-      button:hover {
-        background-color: #0056b3;
-      }
-
-      button:disabled {
-        background-color: gray;
-        cursor: not-allowed;
-      }
-
-      #status {
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-        margin-top: 20px;
-      }
-
-      #loadingSpinner {
-        display: none;
-        width: 40px;
-        height: 40px;
-        border: 5px solid #f3f3f3;
-        border-top: 5px solid #007bff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin-top: 20px;
-      }
-
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-
-      @media (max-width: 600px) {
-        #results {
-          padding: 15px;
-        }
-
-        button {
-          padding: 10px 20px;
-          font-size: 14px;
-        }
-
-        #status {
-          font-size: 16px;
-        }
-      }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+    
+          h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+          }
+    
+          #results {
+            list-style-type: none;
+            counter-reset: searchCount;
+            padding: 0;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+          }
+    
+          #results li {
+            counter-increment: searchCount;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+          }
+    
+          #results li::before {
+            content: counter(searchCount) ". ";
+            font-weight: bold;
+            color: #007bff;
+          }
+    
+          button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+          }
+    
+          button:hover {
+            background-color: #0056b3;
+          }
+    
+          button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+          }
+    
+          #status {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+          }
+    
+          #loadingSpinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+          }
+    
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+    
+          @media (max-width: 600px) {
+            #results {
+              padding: 15px;
+            }
+    
+            button {
+              padding: 10px 20px;
+              font-size: 14px;
+            }
+    
+            #status {
+              font-size: 16px;
+            }
+          }
     </style>
-  </head>
-  <body>
-    <h1>Start Your Search</h1>
+</head>
+
+<body>
+    <h1>Start Your Searches for Today</h1>
+    <h5>Have a Great Day ahead! 🤑</h1>
     <button id="searchButton" onclick="startSearches()">Start Searches</button>
     <div id="loadingSpinner"></div>
     <ol id="results"></ol>
     <div id="status"></div>
 
     <script>
-      // const scientificTerms = [
-      //   "weekday", "halogen", "meth reciepe", "heisenberg", "walter white",
-      //   "Proper Patola", "Do You Know", "Patiala Peg", "Laembadgini", "Dildarian",
-      //   "invincible", "omni man", "mark grayson", "vitramite", "henry cavil",
-      //   "h20", "iphone 13", "ipad price 2nd gen", "renault duster", "deby amazon prime",
-      //   "Judaa", "Yaarian", "Lutti Jaa", "Angreji Beat", "Brown Rang", "Dheere Dheere",
-      //   "Chaar Botal Vodka", "Angreji Beat", "Phulkari", "Patt Lainge", "Car Nachdi",
-      //   "Naag", "Mitran De Boot", "Soorma", "Dil Luteya", "Mitran Di Chatri", "Saun Di Jhadi",
-      //   "Kabza", "Saaun Di Jhadi", "Date on Ford", "Jaan Jaan", "Sohnea", "Second Hand Jawani",
-      //   "Sajjan Raazi", "Udaarian", "Cheerey Waalea", "Tere Vaastey", "La La La", "Kala Chashma",
-      //   "Mile Ho Tum jo humko", "Avengers- gurnam bhullar", "sleepless night", "3am thoughts",
-      //   "Galaxy", "Nebula", "Quasar", "Black Hole", "Supernova", "Singularity", "Dark Matter",
-      //   "Gravity Wave", "Cosmic Microwave Background Radiation", "Neutron Star", "Exoplanet",
-      //   "Protoplanet", "Planetary Nebula", "Interstellar Medium", "Red Giant", "White Dwarf",
-      //   "Pulsar", "Gamma Ray Burst", "Cosmic Inflation", "Higgs Boson", "Quantum Entanglement",
-      //   "General Relativity", "Special Relativity", "Dark Energy", "Heromotocorp", "YamahaFzs",
-      //   "ola s1 pro", "ola electric", "kambi song", "pari pandher", "diwali pics",
-      //   "christmas celebration in italy", "Cosmic Ray", "Neutrino", "Astrophysics", "Cosmology",
-      //   "Astrobiology", "Astrochemistry", "Astrogeology", "Astrostatistics", "Jordan Sandhu",
-      //   "Guri", "Jass Manak", "Jassi Gill", "null", "undefined"
-      // ];
-
-
-      const scientificTerms2 = [
-  "Artificial Intelligence", "Machine Learning", "Quantum Computing", "Blockchain", "Neural Networks",
-  "Big Data", "Internet of Things", "Augmented Reality", "Virtual Reality", "5G Technology",
-  "Nanotechnology", "Biotechnology", "Genetic Engineering", "CRISPR", "Stem Cells",
-  "Renewable Energy", "Solar Power", "Wind Energy", "Hydrogen Fuel Cells", "Electric Vehicles",
-  "Smart Grids", "Smart Cities", "Robotics", "Automation", "Drones",
-  "3D Printing", "Additive Manufacturing", "Cybersecurity", "Data Privacy", "Cloud Computing",
-  "Edge Computing", "Quantum Cryptography", "Digital Twins", "Smart Homes", "Wearable Technology",
-  "Telemedicine", "Telehealth", "E-commerce", "Fintech", "Insurtech",
-  "Regtech", "Proptech", "Agtech", "Edtech", "Healthtech",
-  "Space Exploration", "Mars Colonization", "Astrobiology", "Exoplanets", "Dark Matter",
-  "Dark Energy", "Black Holes", "Neutron Stars", "Supernovae", "Gravitational Waves",
-  "Higgs Boson", "Quantum Entanglement", "String Theory", "Multiverse", "Time Travel",
-  "Parallel Universes", "Artificial General Intelligence", "Singularity", "Transhumanism", "Bioinformatics",
-  "Nanorobots", "Synthetic Biology", "Gene Editing", "Personalized Medicine", "Immunotherapy",
-  "CRISPR-Cas9", "Epigenetics", "Microbiome", "Stem Cell Therapy", "Regenerative Medicine",
-  "3D Bioprinting", "Organ-on-a-Chip", "Wearable Health Devices", "Telepresence", "Smart Glasses",
-  "Brain-Computer Interface", "Neuroprosthetics", "Neural Implants", "Cognitive Computing", "Emotion AI",
-  "Natural Language Processing", "Computer Vision", "Speech Recognition", "Chatbots", "Virtual Assistants",
-  "Robotic Process Automation", "Autonomous Vehicles", "Self-Driving Cars", "Electric Scooters", "Hyperloop",
-  "Space Tourism", "Reusable Rockets", "Satellite Internet", "Astrophysics", "Cosmology",
-  "Quantum Mechanics", "Relativity", "String Theory", "Particle Physics", "Nuclear Fusion",
-  "Climate Change", "Global Warming", "Carbon Footprint", "Sustainable Development", "Green Technology",
-  "Circular Economy", "Zero Waste", "Carbon Neutral", "Renewable Resources", "Environmental Impact",
-  "Biodiversity", "Conservation Biology", "Ecology", "Marine Biology", "Wildlife Protection",
-  "Endangered Species", "Habitat Restoration", "Pollution Control", "Waste Management", "Recycling",
-  "Upcycling", "Composting", "Green Building", "Energy Efficiency", "Smart Agriculture",
-  "Precision Farming", "Vertical Farming", "Aquaponics", "Hydroponics", "Agroforestry",
-  "Permaculture", "Sustainable Agriculture", "Food Security", "Food Waste", "Urban Farming",
-  "Community Supported Agriculture", "Farm-to-Table", "Organic Farming", "Agroecology", "Soil Health",
-  "Water Conservation", "Rainwater Harvesting", "Desalination", "Water Purification", "Water Recycling",
-  "Water Scarcity", "Drought Management", "Flood Control", "Irrigation Systems", "Hydrology",
-  "Geothermal Energy", "Tidal Energy", "Wave Energy", "Ocean Thermal Energy Conversion", "Hydropower",
-  "Wind Turbines", "Solar Panels", "Energy Storage", "Battery Technology", "Smart Meters",
-  "Energy Grid", "Energy Transition", "Decarbonization", "Carbon Capture", "Carbon Sequestration",
-  "Greenhouse Gases", "Emissions Trading", "Carbon Pricing", "Climate Policy", "Climate Adaptation",
-  "Climate Mitigation", "Climate Resilience", "Climate Justice", "Climate Action", "Paris Agreement",
-  "Sustainable Development Goals", "Environmental Policy", "Environmental Justice", "Environmental Ethics", "Environmental Education",
-  "Environmental Activism", "Environmental NGOs", "Environmental Law", "Environmental Economics", "Environmental Sociology",
-  "Environmental Psychology", "Environmental Health", "Environmental Science", "Environmental Engineering", "Environmental Management",
-  "Environmental Impact Assessment", "Environmental Monitoring", "Environmental Auditing", "Environmental Reporting", "Environmental Certification",
-  "Environmental Standards", "Environmental Regulations", "Environmental Compliance", "Environmental Risk Assessment", "Environmental Performance",
-  "Environmental Sustainability", "Environmental Stewardship", "Environmental Conservation", "Environmental Restoration", "Environmental Protection",
-  "Environmental Awareness", "Environmental Advocacy", "Environmental Campaigns", "Environmental Movements", "Environmental Organizations",
-  "Environmental Conferences", "Environmental Publications", "Environmental Research", "Environmental Studies", "Environmental Education Programs",
-  "Environmental Courses", "Environmental Degrees", "Environmental Careers", "Environmental Jobs", "Environmental Internships",
-  "Environmental Volunteering", "Environmental Fellowships", "Environmental Scholarships", "Environmental Grants", "Environmental Funding",
-  "Environmental Investments", "Environmental Startups", "Environmental Innovations", "Environmental Technologies", "Environmental Solutions",
-  "Environmental Products", "Environmental Services", "Environmental Consulting", "Environmental Engineering Firms", "Environmental Law Firms",
-  "Environmental NGOs", "Environmental Activists", "Environmental Leaders", "Environmental Influencers", "Environmental Bloggers",
-  "Environmental Podcasts", "Environmental Documentaries", "Environmental Films", "Environmental Books", "Environmental Art",
-  "Environmental Music", "Environmental Photography", "Environmental Exhibitions", "Environmental Festivals", "Environmental Events",
-  "Environmental Awards", "Environmental Recognition", "Environmental Certifications", "Environmental Accreditations", "Environmental Rankings",
-  "Environmental Ratings", "Environmental Reviews", "Environmental Testimonials", "Environmental Case Studies", "Environmental Reports",
-  "Environmental Publications", "Environmental News", "Environmental Media", "Environmental Journalism", "Environmental Reporting",
-  "Environmental Communications", "Environmental Marketing", "Environmental Advertising", "Environmental Branding", "Environmental Public Relations",
-  "Environmental Social Media", "Environmental Websites", "Environmental Blogs", "Environmental Forums", "Environmental Communities",
-  "Environmental Networks", "Environmental Associations", "Environmental Coalitions", "Environmental Partnerships", "Environmental Alliances",
-  "Environmental Collaborations", "Environmental Initiatives", "Environmental Projects", "Environmental Programs", "Environmental Campaigns",
-  "Environmental Movements", "Environmental Actions", "Environmental Activism", "Environmental Advocacy", "Environmental Lobbying",
-  "Environmental Policy", "Environmental Law", "Environmental Regulations", "Environmental Standards", "Environmental Compliance",
-  "Environmental Auditing", "Environmental Reporting", "Environmental Certification", "Environmental Performance", "Environmental Sustainability",
-  "Environmental Stewardship", "Environmental Conservation", "Environmental Restoration", "Environmental Protection", "Environmental Awareness",
-  "Environmental Education", "Environmental Research", "Environmental Studies", "Environmental Science", "Environmental Engineering",
-  "Environmental Management", "Environmental Impact Assessment", "Environmental Monitoring", "Environmental Risk Assessment", "Environmental Ethics",
-  "Environmental Sociology", "Environmental Psychology", "Environmental Health"];
- 
-
-
-      function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-      }
-
-      function performSearch(term) {
-        const encodedTerm = encodeURIComponent(term);
-        const searchUrl = `https://www.bing.com/search?q=${encodedTerm}&form=QSRE3`;
-        const listItem = document.createElement("li");
-        listItem.textContent = term;
-        document.getElementById("results").appendChild(listItem);
-        window.open(searchUrl, "searchWindow");
-      }
-
-      function startSearches() {
-        const numSearches = prompt("Enter the number of searches (max 20):");
-
-        // Validate user input
-        if (numSearches && !isNaN(numSearches)) {
-          const searchCount = parseInt(numSearches);
-          if (searchCount <= 0 || searchCount > 20) {
-            alert("Please enter a number between 1 and 20.");
-            return;
+          const updatedTerms = [
+            // Technology & AI
+            "Generative AI", "Large Language Models", "ChatGPT", "GPT-4", "Diffusion Models",
+            "Web3", "Metaverse", "NFTs", "DeFi", "DAO",
+            "Digital Avatars", "Spatial Computing", "Neuromorphic Chips", "Swarm Robotics", "Biohacking",
+            
+            // Entertainment & Media
+            "Barbenheimer", "Oppenheimer", "Dune 2", "Oscar Buzz", "Streaming Wars",
+            "K-pop Wave", "Taylor Swift Era", "BTS Military", "Disney+", "Netflix Algorithm",
+            "Viral TikTok", "Instagram Reels", "YouTube Shorts", "Podcast Boom", "True Crime Docs",
+            
+            // Business & Finance
+            "Silicon Valley Bank", "Bitcoin ETF", "Meme Stocks", "Recession Fears", "Quiet Quitting",
+            "Great Resignation", "Hybrid Work", "Return to Office", "Layoff Wave", "Tech Winter",
+            "SPACs Crash", "Crypto Winter", "Stablecoins", "CBDCs", "Inflation Hedge",
+            
+            // Science & Health
+            "mRNA Vaccines", "Long COVID", "RSV Surge", "Ozempic", "Weight Loss Drugs",
+            "CRISPR Babies", "Lab-Grown Meat", "Vertical Farming", "Psychedelic Therapy", "Mental Health Apps",
+            "Alzheimer's Breakthrough", "Cancer Immunotherapy", "Microbiome Therapy", "Wearable ECG", "Continuous Glucose Monitoring",
+            
+            // Automotive & Transport
+            "Cybertruck", "Rivian", "BYD", "Solid-State Batteries", "EV Price War",
+            "Autonomous Taxis", "Robotaxis", "eVTOL", "Flying Cars", "Hyperloop Delay",
+            "High-Speed Rail", "Micromobility", "E-scooters", "Bike Sharing", "Cargo Bikes",
+            
+            // Social Trends
+            "Quiet Luxury", "Deinfluencing", "Girl Math", "Bed Rotting", "Lazy Girl Jobs",
+            "Climate Anxiety", "Eco-Grief", "Doomscrolling", "Digital Detox", "Analog Revival",
+            "Slow Living", "Van Life", "Tiny Homes", "Co-Living", "Digital Nomads",
+            
+            // Food & Beverage
+            "Ozempic Diet", "Gut Health Foods", "Prebiotic Sodas", "Mocktail Boom", "Alcohol-Free",
+            "Vegan Seafood", "Plant-Based Eggs", "Regenerative Agriculture", "Upcycled Foods", "Meal Kits",
+            "Ghost Kitchens", "TikTok Recipes", "Mukbang", "Coffee Inflation", "Designer Water",
+            
+            // Fashion & Beauty
+            "Telfar Bags", "Stanley Cups", "Dyson Hair", "Clean Beauty", "Skin Cycling",
+            "TikTok Beauty", "Viral Perfumes", "Gender-Neutral Fashion", "Thrift Flip", "Y2K Revival",
+            "Barbiecore", "Gorpcore", "Mob Wife Aesthetic", "Coquette", "Dark Academia",
+            
+            // Sports & Gaming
+            "Lionel Messi", "World Cup 2026", "WNBA Boom", "NIL Deals", "Sports Betting",
+            "Esports Decline", "NFT Games", "Palworld", "Genshin Impact", "GameFi",
+            "VR Gaming", "Cloud Gaming", "Console Wars", "Gaming Layoffs", "Speedrunning",
+            
+            // Politics & World Events
+            "Ukraine War", "Gaza Conflict", "BRICS Expansion", "Chip Wars", "Rare Earth Metals",
+            "Critical Minerals", "Supply Chain", "Friend Shoring", "Nearshoring", "Deglobalization",
+            "Climate Migration", "COP28", "Loss and Damage", "Global Stocktake", "Net Zero Pledges",
+            
+            // Miscellaneous
+            "OnlyFans Economy", "FinTok", "Tradwives", "Huberman Lab", "Blue Zones",
+            "DINKs", "Boomerang Kids", "Sandwich Generation", "Co-Star Astrology", "Manifestation",
+            "Shadow Work", "Trauma Dumping", "Main Character Energy", "NPC Trend", "AI Girlfriends"
+          ];
+    
+          function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
           }
-
-          // Disable the button to prevent multiple clicks
-          document.getElementById("searchButton").disabled = true;
-          document.getElementById("status").textContent = "Starting searches...";
-          document.getElementById("loadingSpinner").style.display = "block"; // Show loading spinner
-
-          // Clear previous results
-          document.getElementById("results").innerHTML = "";
-
-          const shuffledTerms = shuffleArray(scientificTerms2);
-          let index = 0;
-          let completedSearches = 0;
-
-          function performSearchWithDelay() {
-            if (completedSearches < searchCount && index < shuffledTerms.length) {
-              performSearch(shuffledTerms[index]);
-              index++;
-              completedSearches++;
-              setTimeout(performSearchWithDelay, 12000); // Delay between searches
+    
+          function performSearch(term) {
+            const encodedTerm = encodeURIComponent(term);
+            const searchUrl = `https://www.bing.com/search?q=${encodedTerm}&form=QSRE3`;
+            const listItem = document.createElement("li");
+            listItem.textContent = term;
+            document.getElementById("results").appendChild(listItem);
+            window.open(searchUrl, "searchWindow");
+          }
+    
+          function startSearches() {
+            const numSearches = prompt("Enter the number of searches (max 30):");
+    
+            // Validate user input
+            if (numSearches && !isNaN(numSearches)) {
+              const searchCount = parseInt(numSearches);
+              if (searchCount <= 0 || searchCount > 30) {
+                alert("Please enter a number between 1 and 30.");
+                return;
+              }
+    
+              // Disable the button to prevent multiple clicks
+              document.getElementById("searchButton").disabled = true;
+              document.getElementById("status").textContent = "Starting searches...";
+              document.getElementById("loadingSpinner").style.display = "block"; // Show loading spinner
+    
+              // Clear previous results
+              document.getElementById("results").innerHTML = "";
+    
+              const shuffledTerms = shuffleArray(updatedTerms);
+              let index = 0;
+              let completedSearches = 0;
+    
+              function performSearchWithDelay() {
+                if (completedSearches < searchCount && index < shuffledTerms.length) {
+                  performSearch(shuffledTerms[index]);
+                  index++;
+                  completedSearches++;
+                  setTimeout(performSearchWithDelay, 12000); // Delay between searches
+                } else {
+                  document.getElementById("status").textContent = "Searches complete!";
+                  document.getElementById("loadingSpinner").style.display = "none"; // Hide loading spinner
+                  document.getElementById("searchButton").disabled = false; // Enable the button again
+                }
+              }
+    
+              performSearchWithDelay();
             } else {
-              document.getElementById("status").textContent = "Searches complete!";
-              document.getElementById("loadingSpinner").style.display = "none"; // Hide loading spinner
-              document.getElementById("searchButton").disabled = false; // Enable the button again
+              alert("Please enter a valid number for searches.");
             }
           }
-
-          performSearchWithDelay();
-        } else {
-          alert("Please enter a valid number for searches.");
-        }
-      }
     </script>
-  </body>
+</body>
+
 </html>
